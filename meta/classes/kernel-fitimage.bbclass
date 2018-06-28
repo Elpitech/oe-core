@@ -307,6 +307,7 @@ EOF
 
 		cat << EOF >> ${1}
                         signature@1 {
+                                timestamp = <${@int(time.time())}>;
                                 algo = "${conf_csum},rsa2048";
                                 key-name-hint = "${conf_sign_keyname}";
 				${sign_line}
