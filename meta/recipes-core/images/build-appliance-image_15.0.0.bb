@@ -22,7 +22,7 @@ IMAGE_FSTYPES = "wic.vmdk"
 
 inherit core-image module-base setuptools3
 
-SRCREV ?= "2464dd404041a7a00b18e42950cbf4719180141d"
+SRCREV ?= "c10a028e270ff71471b4ba982f61ef64cb85ca55"
 SRC_URI = "git://git.yoctoproject.org/poky;branch=sumo \
            file://Yocto_Build_Appliance.vmx \
            file://Yocto_Build_Appliance.vmxf \
@@ -77,7 +77,7 @@ fakeroot do_populate_poky_src () {
 	echo "# export ALL_PROXY=https://proxy.example.com:8080" >> ${IMAGE_ROOTFS}/home/builder/.bashrc
 	echo "# export ALL_PROXY=socks://socks.example.com:1080" >> ${IMAGE_ROOTFS}/home/builder/.bashrc
 
-	chown -R builder.builder ${IMAGE_ROOTFS}/home/builder/poky
+	chown -R builder:builder ${IMAGE_ROOTFS}/home/builder/poky
 	chmod -R ug+rw ${IMAGE_ROOTFS}/home/builder/poky
 
 	# Assume we will need CDROM to install guest additions
@@ -105,8 +105,8 @@ fakeroot do_populate_poky_src () {
 	   pip3_install_params="${pip3_install_params} --proxy ${http_proxy}"
 	fi
 	pip3 install ${pip3_install_params}
-	chown -R builder.builder ${IMAGE_ROOTFS}/home/builder/.local
-	chown -R builder.builder ${IMAGE_ROOTFS}/home/builder/.cache
+	chown -R builder:builder ${IMAGE_ROOTFS}/home/builder/.local
+	chown -R builder:builder ${IMAGE_ROOTFS}/home/builder/.cache
 }
 
 IMAGE_PREPROCESS_COMMAND += "do_populate_poky_src; "

@@ -135,7 +135,7 @@ class TestImage(OESelftestTestCase):
         Summary: Check package feeds functionality for dnf
         Expected: 1. Check that remote package feeds can be accessed
         Product: oe-core
-        Author: Alexander Kanavin <alexander.kanavin@intel.com>
+        Author: Alexander Kanavin <alex.kanavin@gmail.com>
         """
         if get_bb_var('DISTRO') == 'poky-tiny':
             self.skipTest('core-image-full-cmdline not buildable for poky-tiny')
@@ -148,10 +148,12 @@ class TestImage(OESelftestTestCase):
         features += 'EXTRA_IMAGE_FEATURES += "package-management"\n'
         features += 'PACKAGE_CLASSES = "package_rpm"\n'
 
+        bitbake('gnupg-native -c addto_recipe_sysroot')
+
         # Enable package feed signing
         self.gpg_home = tempfile.mkdtemp(prefix="oeqa-feed-sign-")
         signing_key_dir = os.path.join(self.testlayer_path, 'files', 'signing')
-        runCmd('gpg --batch --homedir %s --import %s' % (self.gpg_home, os.path.join(signing_key_dir, 'key.secret')))
+        runCmd('gpg --batch --homedir %s --import %s' % (self.gpg_home, os.path.join(signing_key_dir, 'key.secret')), native_sysroot=get_bb_var("RECIPE_SYSROOT_NATIVE", "gnupg-native"))
         features += 'INHERIT += "sign_package_feed"\n'
         features += 'PACKAGE_FEED_GPG_NAME = "testuser"\n'
         features += 'PACKAGE_FEED_GPG_PASSPHRASE_FILE = "%s"\n' % os.path.join(signing_key_dir, 'key.passphrase')
@@ -231,7 +233,7 @@ class Postinst(OESelftestTestCase):
         Expected:       The scriptlet failure is properly reported.
                         The file that is created after the error in the scriptlet is not present.
         Product: oe-core
-        Author: Alexander Kanavin <alexander.kanavin@intel.com>
+        Author: Alexander Kanavin <alex.kanavin@gmail.com>
         """
 
         import oe.path

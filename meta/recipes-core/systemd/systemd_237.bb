@@ -54,6 +54,17 @@ SRC_URI += "file://touchscreen.rules \
            file://libmount.patch \
            file://0034-Fix-format-truncation-compile-failure-by-typecasting.patch \
            file://0035-Define-glibc-compatible-basename-for-non-glibc-syste.patch \
+           file://0001-core-when-deserializing-state-always-use-read_line-L.patch \
+           file://0001-chown-recursive-let-s-rework-the-recursive-logic-to-.patch \
+           file://0001-dhcp6-make-sure-we-have-enough-space-for-the-DHCP6-o.patch \
+           file://0024-journald-do-not-store-the-iovec-entry-for-process-co.patch \
+           file://0025-journald-set-a-limit-on-the-number-of-fields-1k.patch \
+           file://0026-journal-remote-set-a-limit-on-the-number-of-fields-i.patch \
+           file://0027-journal-fix-out-of-bounds-read-CVE-2018-16866.patch \
+           file://0001-tmpfiles-don-t-resolve-pathnames-when-traversing-rec.patch \
+           file://0002-Make-tmpfiles-safe.patch \
+           file://CVE-2019-6454.patch \
+           file://sd-bus-if-we-receive-an-invalid-dbus-message-ignore-.patch \
            "
 SRC_URI_append_qemuall = " file://0001-core-device.c-Change-the-default-device-timeout-to-2.patch"
 
@@ -179,7 +190,7 @@ EXTRA_OEMESON += "-Dlink-udev-shared=false"
 
 EXTRA_OEMESON += "-Dnobody-user=nobody \
                   -Dnobody-group=nobody \
-                  -Droothomedir=${ROOTHOME} \
+                  -Droothomedir=${ROOT_HOME} \
                   -Drootlibdir=${rootlibdir} \
                   -Drootprefix=${rootprefix} \
                   -Dsysvrcnd-path=${sysconfdir} \
