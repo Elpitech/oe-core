@@ -3,6 +3,7 @@ require gzip.inc
 LICENSE = "GPLv3+"
 
 SRC_URI = "${GNU_MIRROR}/gzip/${BP}.tar.gz \
+            file://gzip-1.9-glibc-change-work-around.patch \
             file://run-ptest"
 SRC_URI_append_class-target = " file://wrong-path-fix.patch"
 
