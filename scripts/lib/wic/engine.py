@@ -191,7 +191,7 @@ def wic_create(wks_file, rootfs_dir, bootimg_dir, kernel_dir,
     if not os.path.exists(options.outdir):
         os.makedirs(options.outdir)
 
-    pname = 'direct'
+    pname = options.imager
     plugin_class = PluginMgr.get_plugins('imager').get(pname)
     if not plugin_class:
         raise WicError('Unknown plugin: %s' % pname)
@@ -245,9 +245,16 @@ class Disk:
         self._ptable_format = None
 
         # find parted
-        self.paths = "/bin:/usr/bin:/usr/sbin:/sbin/"
+        # read paths from $PATH environment variable
+        # if it fails, use hardcoded paths
+        pathlist = "/bin:/usr/bin:/usr/sbin:/sbin/"
+        try:
+            self.paths = os.environ['PATH'] + ":" + pathlist
+        except KeyError:
+            self.paths = pathlist
+
         if native_sysroot:
-            for path in self.paths.split(':'):
+            for path in pathlist.split(':'):
                 self.paths = "%s%s:%s" % (native_sysroot, path, self.paths)
 
         self.parted = find_executable("parted", self.paths)
@@ -266,10 +273,15 @@ class Disk:
             out = exec_cmd("%s -sm %s unit B print" % (self.parted, self.imagepath))
             parttype = namedtuple("Part", "pnum start end size fstype")
             splitted = out.splitlines()
-            lsector_size, psector_size, self._ptable_format = splitted[1].split(":")[3:6]
+            # skip over possible errors in exec_cmd output
+            try:
+                idx =splitted.index("BYT;")
+            except ValueError:
+                raise WicError("Error getting partition information from %s" % (self.parted))
+            lsector_size, psector_size, self._ptable_format = splitted[idx + 1].split(":")[3:6]
             self._lsector_size = int(lsector_size)
             self._psector_size = int(psector_size)
-            for line in splitted[2:]:
+            for line in splitted[idx + 2:]:
                 pnum, start, end, size, fstype = line.split(':')[:5]
                 partition = parttype(int(pnum), int(start[:-1]), int(end[:-1]),
                                      int(size[:-1]), fstype)
@@ -326,7 +338,7 @@ class Disk:
     def copy(self, src, pnum, path):
         """Copy partition image into wic image."""
         if self.partitions[pnum].fstype.startswith('ext'):
-            cmd = "echo -e 'cd {}\nwrite {} {}' | {} -w {}".\
+            cmd = "printf 'cd {}\nwrite {} {}' | {} -w {}".\
                       format(path, src, os.path.basename(src),
                              self.debugfs, self._get_part_image(pnum))
         else: # fat
@@ -494,7 +506,7 @@ class Disk:
                     sparse_copy(partfname, target, seek=part['start'] * self._lsector_size)
                     os.unlink(partfname)
                 elif part['type'] != 'f':
-                    logger.warn("skipping partition {}: unsupported fstype {}".format(pnum, fstype))
+                    logger.warning("skipping partition {}: unsupported fstype {}".format(pnum, fstype))
 
 def wic_ls(args, native_sysroot):
     """List contents of partitioned image or vfat partition."""
