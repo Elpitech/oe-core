@@ -1,0 +1,22 @@
+From 3732aed2b0aef40123e64bd219e9bf23c1e3b672 Mon Sep 17 00:00:00 2001
+From: "Konstantin Kirik (snegovick)" <snegovick@uprojects.org>
+Date: Sat, 10 Sep 2022 02:13:12 +0300
+Subject: [PATCH] Fix null pointer dereference in elflint
+
+---
+ src/elflint.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/elflint.c b/src/elflint.c
+index 85cc783..aa8b562 100644
+--- a/src/elflint.c
++++ b/src/elflint.c
+@@ -4102,7 +4102,7 @@ section [%2zu] '%s' has type NOBITS but is read from the file in segment of prog
+ 			    bad = (databits == NULL
+ 				   || databits->d_size != shdr->sh_size);
+ 			    for (size_t idx = 0;
+-				 idx < databits->d_size && ! bad;
++				 ! bad && idx < databits->d_size;
+ 				 idx++)
+ 			      bad = ((char *) databits->d_buf)[idx] != 0;
+ 
