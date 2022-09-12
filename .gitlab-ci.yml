@@ -1,0 +1,69 @@
+stages:
+  - build
+
+.build-oe:
+  image: $CI_REGISTRY/lpt/containers/common-oe-builder:1-0-0
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_DEPTH: 100
+    GITPORT: 22
+  tags:
+    - x86_64
+  script:
+    - mkdir -p ~/.ssh
+    - cat $deploy_id | base64 --decode > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/ -R
+    - chmod 600 ~/.ssh/*
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -p $GITPORT -H "${CI_SERVER_HOST}" >> ~/.ssh/known_hosts
+    - echo "Prepare bitbake"
+    - git clone git@gitlab.elpitech.ru:distro/yocto/bitbake.git bitbake -b honister-elp
+    - echo "Prepare meta-baikal-t"
+    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-baikal-t.git -b honister-elp meta-baikal-t
+    - echo "Prepare meta-recovery"
+    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-recovery.git -b honister-elp meta-recovery
+    - echo "Prepare meta-openembedded"
+    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-openembedded.git -b honister-elp meta-openembedded
+    - echo "Prepare meta-micropython"
+    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-micropython.git -b honister-elp meta-micropython
+    - echo "Download cached sources"
+    - wget -q http://192.168.11.250/dl.tar
+    - tar xf dl.tar
+    - DL_DIR="$(pwd)/dl"
+    - echo "Set env"
+    - export MACHINE=${MACHINE}
+    - export TEMPLATECONF=meta-recovery/conf
+    - export BB_NUMBER_THREADS=$(nproc)
+    - export PARALLEL_MAKE="-j ${BB_NUMBER_THREADS}"
+    - source oe-init-build-env
+    - echo "Set path to cached sources"
+    - |
+      echo "DL_DIR=\"${DL_DIR}\"" >> conf/local.conf
+    - bitbake baikal-image-recovery
+    - |
+      BRANCH=""
+      if [ "$CI_COMMIT_BRANCH" != "$CI_DEFAULT_BRANCH" ]; then
+        if [ -n "${CI_COMMIT_BRANCH}" ]; then
+          BRANCH="${CI_COMMIT_BRANCH}_"
+        fi
+      fi
+      VERSION=$(git describe --tags)
+      echo "Uploading version ${VERSION}"
+      echo "          branch  ${BRANCH}"
+      echo "          machine ${MACHINE}"
+      GIT_TAG=$(git describe --tags --no-abbrev)
+      FULL_PATH="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/oe-image/${GIT_TAG}/${BRANCH}${MACHINE}_${VERSION}"
+      echo "Full path: ${FULL_PATH}"
+      BUILD_DIR=$(pwd)
+      cd tmp/deploy/images/${MACHINE}/;
+      ROM=$(ls recovery-*.rom)
+      echo "ROM: ${ROM}"
+      cd ${BUILD_DIR}
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file tmp/deploy/images/${MACHINE}/${ROM} ${FULL_PATH}.rom
+
+build-mitx:
+  extends: .build-oe
+  variables:
+    MACHINE: mitx
