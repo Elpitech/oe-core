@@ -23,6 +23,7 @@ SRC_URI = "https://sourceware.org/elfutils/ftp/${PV}/${BP}.tar.bz2 \
            file://0001-tests-Makefile.am-compile-test_nlist-with-standard-C.patch \
            file://0001-debuginfod-debuginfod-client.c-correct-string-format.patch \
            file://glibc-2.34-fix.patch \
+           file://0001-Fix-null-pointer-dereference-in-elflint.patch \
            "
 SRC_URI:append:libc-musl = " \
            file://0002-musl-libs.patch \
