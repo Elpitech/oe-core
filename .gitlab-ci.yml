@@ -8,6 +8,16 @@ stages:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_DEPTH: 100
     GITPORT: 22
+    ELP_BITBAKE_URL: git@gitlab.elpitech.ru:distro/yocto/bitbake.git
+    ELP_BITBAKE_BRANCH: honister-elp
+    ELP_BAIKAL_T_URL: git@gitlab.elpitech.ru:distro/yocto/meta-baikal-t.git
+    ELP_BAIKAL_T_BRANCH: honister-elp
+    ELP_RECOVERY_URL: git@gitlab.elpitech.ru:distro/yocto/meta-recovery.git
+    ELP_RECOVERY_BRANCH: honister-elp
+    ELP_OPENEMBEDDED_URL: git@gitlab.elpitech.ru:distro/yocto/meta-openembedded.git
+    ELP_OPENEMBEDDED_BRANCH: honister-elp
+    ELP_MICROPYTHON_URL: git@gitlab.elpitech.ru:distro/yocto/meta-micropython.git
+    ELP_MICROPYTHON_BRANCH: honister-elp
   cache:
     key: baikal-t-recovery
     paths:
@@ -23,15 +33,15 @@ stages:
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -p $GITPORT -H "${CI_SERVER_HOST}" >> ~/.ssh/known_hosts
     - echo "Prepare bitbake"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/bitbake.git bitbake -b honister-elp
+    - git clone ${ELP_BITBAKE_URL} bitbake -b ${ELP_BITBAKE_BRANCH}
     - echo "Prepare meta-baikal-t"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-baikal-t.git -b honister-elp meta-baikal-t
+    - git clone ${ELP_BAIKAL_T_URL} -b ${ELP_BAIKAL_T_BRANCH} meta-baikal-t
     - echo "Prepare meta-recovery"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-recovery.git -b honister-elp meta-recovery
+    - git clone ${ELP_RECOVERY_URL} -b ${ELP_RECOVERY_BRANCH} meta-recovery
     - echo "Prepare meta-openembedded"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-openembedded.git -b honister-elp meta-openembedded
+    - git clone ${ELP_OPENEMBEDDED_URL} -b ${ELP_OPENEMBEDDED_BRANCH} meta-openembedded
     - echo "Prepare meta-micropython"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-micropython.git -b honister-elp meta-micropython
+    - git clone ${ELP_MICROPYTHON_URL} -b ${ELP_MICROPYTHON_BRANCH} meta-micropython
     - echo "Download cached sources"
     - wget -q http://192.168.11.250/dl.tar
     - tar xf dl.tar
