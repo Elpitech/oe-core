@@ -8,6 +8,10 @@ stages:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_DEPTH: 100
     GITPORT: 22
+  cache:
+    key: baikal-t-recovery
+    paths:
+      - sstate/
   tags:
     - x86_64
   script:
@@ -31,7 +35,8 @@ stages:
     - echo "Download cached sources"
     - wget -q http://192.168.11.250/dl.tar
     - tar xf dl.tar
-    - DL_DIR="$(pwd)/dl"
+    - PROJECT_DIR=$(pwd)
+    - DL_DIR="${PROJECT_DIR}/dl"
     - echo "Set env"
     - export MACHINE=${MACHINE}
     - export TEMPLATECONF=meta-recovery/conf
@@ -41,6 +46,8 @@ stages:
     - echo "Set path to cached sources"
     - |
       echo "DL_DIR=\"${DL_DIR}\"" >> conf/local.conf
+      echo "SSTATE_DIR ?= \"${PROJECT_DIR}/sstate\"" >> conf/local.conf
+      cat conf/local.conf
     - bitbake baikal-image-recovery
     - |
       BRANCH=""
@@ -58,7 +65,7 @@ stages:
       echo "Full path: ${FULL_PATH}"
       BUILD_DIR=$(pwd)
       cd tmp/deploy/images/${MACHINE}/;
-      ROM=$(ls recovery-*.rom)
+      ROM=$(ls recovery-${MACHINE}-*.rom)
       echo "ROM: ${ROM}"
       cd ${BUILD_DIR}
       curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file tmp/deploy/images/${MACHINE}/${ROM} ${FULL_PATH}.rom
@@ -67,3 +74,13 @@ build-mitx:
   extends: .build-oe
   variables:
     MACHINE: mitx
+
+build-et402:
+  extends: .build-oe
+  variables:
+    MACHINE: et402
+
+build-et412:
+  extends: .build-oe
+  variables:
+    MACHINE: et412
