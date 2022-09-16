@@ -8,6 +8,22 @@ stages:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_DEPTH: 100
     GITPORT: 22
+    ELP_GITLAB: git@gitlab.elpitech.ru
+    ELP_BITBAKE_URL: ${ELP_GITLAB}:distro/yocto/bitbake.git
+    ELP_BITBAKE_BRANCH: honister-elp
+    ELP_BITBAKE_REF: c2d8f9b2137bd4a98eb0f51519493131773e7517
+    ELP_BAIKAL_T_URL: ${ELP_GITLAB}:distro/yocto/meta-baikal-t.git
+    ELP_BAIKAL_T_BRANCH: honister-elp
+    ELP_BAIKAL_T_REF: fc64c701fe84253393fe8257191a04df87657336
+    ELP_RECOVERY_URL: ${ELP_GITLAB}:distro/yocto/meta-recovery.git
+    ELP_RECOVERY_BRANCH: honister-elp
+    ELP_RECOVERY_REF: f0c0ab88fbd61768a3f272e0594fc5faf5d6001b
+    ELP_OPENEMBEDDED_URL: ${ELP_GITLAB}:distro/yocto/meta-openembedded.git
+    ELP_OPENEMBEDDED_BRANCH: honister-elp
+    ELP_OPENEMBEDDED_REF: 0e6c34f82ca4d43cbca3754c5fe37c5b3bdd0f37
+    ELP_MICROPYTHON_URL: ${ELP_GITLAB}:distro/yocto/meta-micropython.git
+    ELP_MICROPYTHON_BRANCH: honister-elp
+    ELP_MICROPYTHON_REF: 856a0bd3302eb27cd530b988721d12eabe0eb4b7
   cache:
     key: baikal-t-recovery
     paths:
@@ -23,15 +39,20 @@ stages:
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -p $GITPORT -H "${CI_SERVER_HOST}" >> ~/.ssh/known_hosts
     - echo "Prepare bitbake"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/bitbake.git bitbake -b honister-elp
+    - git clone ${ELP_BITBAKE_URL} -b ${ELP_BITBAKE_BRANCH} bitbake
+    - cd bitbake; git checkout ${ELP_BITBAKE_REF}; cd ../
     - echo "Prepare meta-baikal-t"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-baikal-t.git -b honister-elp meta-baikal-t
+    - git clone ${ELP_BAIKAL_T_URL} -b ${ELP_BAIKAL_T_BRANCH} meta-baikal-t
+    - cd meta-baikal-t; git checkout ${ELP_BAIKAL_T_REF}; cd ../
     - echo "Prepare meta-recovery"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-recovery.git -b honister-elp meta-recovery
+    - git clone ${ELP_RECOVERY_URL} -b ${ELP_RECOVERY_BRANCH} meta-recovery
+    - cd meta-recovery; git checkout ${ELP_RECOVERY_REF}; cd ../
     - echo "Prepare meta-openembedded"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-openembedded.git -b honister-elp meta-openembedded
+    - git clone ${ELP_OPENEMBEDDED_URL} -b ${ELP_OPENEMBEDDED_BRANCH} meta-openembedded
+    - cd meta-openembedded; git checkout ${ELP_OPENEMBEDDED_REF}; cd ../
     - echo "Prepare meta-micropython"
-    - git clone git@gitlab.elpitech.ru:distro/yocto/meta-micropython.git -b honister-elp meta-micropython
+    - git clone ${ELP_MICROPYTHON_URL} -b ${ELP_MICROPYTHON_BRANCH} meta-micropython
+    - cd meta-micropython; git checkout ${ELP_MICROPYTHON_REF}; cd ../
     - echo "Download cached sources"
     - wget -q http://192.168.11.250/dl.tar
     - tar xf dl.tar
