@@ -8,19 +8,20 @@ stages:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_DEPTH: 100
     GITPORT: 22
-    ELP_BITBAKE_URL: git@gitlab.elpitech.ru:distro/yocto/bitbake.git
+    ELP_GITLAB: git@gitlab.elpitech.ru
+    ELP_BITBAKE_URL: ${ELP_GITLAB}:distro/yocto/bitbake.git
     ELP_BITBAKE_BRANCH: honister-elp
     ELP_BITBAKE_REF: c2d8f9b2137bd4a98eb0f51519493131773e7517
-    ELP_BAIKAL_T_URL: git@gitlab.elpitech.ru:distro/yocto/meta-baikal-t.git
+    ELP_BAIKAL_T_URL: ${ELP_GITLAB}:distro/yocto/meta-baikal-t.git
     ELP_BAIKAL_T_BRANCH: honister-elp
     ELP_BAIKAL_T_REF: fc64c701fe84253393fe8257191a04df87657336
-    ELP_RECOVERY_URL: git@gitlab.elpitech.ru:distro/yocto/meta-recovery.git
+    ELP_RECOVERY_URL: ${ELP_GITLAB}:distro/yocto/meta-recovery.git
     ELP_RECOVERY_BRANCH: honister-elp
     ELP_RECOVERY_REF: f0c0ab88fbd61768a3f272e0594fc5faf5d6001b
-    ELP_OPENEMBEDDED_URL: git@gitlab.elpitech.ru:distro/yocto/meta-openembedded.git
+    ELP_OPENEMBEDDED_URL: ${ELP_GITLAB}:distro/yocto/meta-openembedded.git
     ELP_OPENEMBEDDED_BRANCH: honister-elp
     ELP_OPENEMBEDDED_REF: 0e6c34f82ca4d43cbca3754c5fe37c5b3bdd0f37
-    ELP_MICROPYTHON_URL: git@gitlab.elpitech.ru:distro/yocto/meta-micropython.git
+    ELP_MICROPYTHON_URL: ${ELP_GITLAB}:distro/yocto/meta-micropython.git
     ELP_MICROPYTHON_BRANCH: honister-elp
     ELP_MICROPYTHON_REF: 856a0bd3302eb27cd530b988721d12eabe0eb4b7
   cache:
