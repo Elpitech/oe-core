@@ -2,7 +2,7 @@ stages:
   - build
 
 .build-oe:
-  image: $CI_REGISTRY/lpt/containers/common-oe-builder:1-0-0
+  image: $CI_REGISTRY/lpt/containers/common-oe-builder:1-0-1
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -28,8 +28,6 @@ stages:
     key: baikal-t-recovery
     paths:
       - sstate/
-  tags:
-    - x86_64
   script:
     - mkdir -p ~/.ssh
     - cat $deploy_id | base64 --decode > ~/.ssh/id_rsa
