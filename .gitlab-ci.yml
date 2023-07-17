@@ -2,7 +2,7 @@ stages:
   - build
 
 .build-oe:
-  image: $CI_REGISTRY/lpt/containers/common-oe-builder:1-0-1
+  image: $CI_REGISTRY/lpt/containers/common-oe-builder:1-0-2
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
